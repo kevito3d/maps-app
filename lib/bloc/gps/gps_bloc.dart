@@ -11,9 +11,7 @@ part 'gps_state.dart';
 class GpsBloc extends Bloc<GpsEvent, GpsState> {
   StreamSubscription? gpsStreamSubscription;
 
-  GpsBloc()
-      : super(const GpsState(
-            isGpsEnabled: false, isGpsPermissionGranted: false)) {
+  GpsBloc() : super(const GpsState(isGpsEnabled: false, isGpsPermissionGranted: false)) {
     on<GpsAndPermissionEvent>((event, emit) => emit(state.copyWith(
           isGpsEnabled: event.isGpsEnabled,
           isGpsPermissionGranted: event.isGpsPermissionGranted,
@@ -28,8 +26,7 @@ class GpsBloc extends Bloc<GpsEvent, GpsState> {
       _isPermissionGranted(),
     ]);
 
-    add(GpsAndPermissionEvent(
-        isGpsEnabled: gpsInitStatus[0], isGpsPermissionGranted: gpsInitStatus[1]));
+    add(GpsAndPermissionEvent(isGpsEnabled: gpsInitStatus[0], isGpsPermissionGranted: gpsInitStatus[1]));
   }
 
   Future<bool> _isPermissionGranted() async {
@@ -40,12 +37,9 @@ class GpsBloc extends Bloc<GpsEvent, GpsState> {
   Future<bool> _checkGpsStatus() async {
     final isEnable = await Geolocator.isLocationServiceEnabled();
 
-    gpsStreamSubscription =
-        Geolocator.getServiceStatusStream().listen((status) {
+    gpsStreamSubscription = Geolocator.getServiceStatusStream().listen((status) {
       final isEnable = status.index == 1 ? true : false;
-      add(GpsAndPermissionEvent(
-          isGpsEnabled: isEnable,
-          isGpsPermissionGranted: state.isGpsPermissionGranted));
+      add(GpsAndPermissionEvent(isGpsEnabled: isEnable, isGpsPermissionGranted: state.isGpsPermissionGranted));
     });
 
     return isEnable;
@@ -54,17 +48,17 @@ class GpsBloc extends Bloc<GpsEvent, GpsState> {
   Future<void> askGpsPermission() async {
     final status = await Permission.location.request();
 
-    switch ( status ) {
+    switch (status) {
       case PermissionStatus.granted:
-        add( GpsAndPermissionEvent(isGpsEnabled: state.isGpsEnabled, isGpsPermissionGranted: true) );
+        add(GpsAndPermissionEvent(isGpsEnabled: state.isGpsEnabled, isGpsPermissionGranted: true));
         break;
-      
+
       case PermissionStatus.denied:
-      break;
+        break;
       case PermissionStatus.restricted:
       case PermissionStatus.limited:
       case PermissionStatus.permanentlyDenied:
-        add( GpsAndPermissionEvent(isGpsEnabled: state.isGpsEnabled, isGpsPermissionGranted: false) );
+        add(GpsAndPermissionEvent(isGpsEnabled: state.isGpsEnabled, isGpsPermissionGranted: false));
         openAppSettings();
     }
   }
